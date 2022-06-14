@@ -26,7 +26,7 @@ var defaults = {
 
 module.exports = function probeHttp(src, options) {
   return new Promise(function (resolve, reject) {
-    var stream, len, finalUrl = src;
+    var stream, responseHeaders, len, finalUrl = src;
 
     try {
       var needleOptions = lodashMerge({}, defaults, options);
@@ -53,6 +53,7 @@ module.exports = function probeHttp(src, options) {
       }
 
       len = headers['content-length'];
+      responseHeaders = headers;
     });
 
     stream.on('err', function (err) {
@@ -65,7 +66,7 @@ module.exports = function probeHttp(src, options) {
         if (len && len.match(/^\d+$/)) result.length = +len;
 
         result.url = finalUrl;
-
+        result.responseHeaders = responseHeaders;
         resolve(result);
         stream.request.abort();
       })
